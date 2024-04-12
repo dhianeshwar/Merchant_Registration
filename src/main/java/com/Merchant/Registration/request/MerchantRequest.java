@@ -1,0 +1,108 @@
+package com.Merchant.Registration.request;
+
+import com.Merchant.Registration.entity.MID;
+import com.Merchant.Registration.entity.MerchantUserRole;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+import java.math.BigInteger;
+@Getter
+@Setter
+@ToString
+
+public class MerchantRequest {
+    private long id;
+    private String mid;
+    private MerchantUserRole role;
+    private String businessAddress2;
+    private String businessAddress3;
+    private String contactPersonPhoneNo;
+    private String natureOfBusiness;
+    private String remarks;
+    private String signedPackage;
+    private String website;
+    private String businessName;
+    private String businessRegistrationNumber;
+    private String businessShortName;
+    private String businessAddress1;
+    private String salutation;
+    private String city;
+    private String state;
+    private String postcode;
+    private String businessContactNumber;
+    private String firstName;
+    private String lastName;
+    private String username;
+    private String email;
+    private String password;
+    private int failedLoginAttempt;
+    private Integer maxAmountPerTransaction;
+    private Integer maxAmountPerMonth;
+    private String tradingName;
+    private String contactPersonName;
+    private String ownerName;
+    private String ownerPassportNo;
+    private String ownerContactNo;
+    private String faxNo;
+    private String companyType;
+    private String businessType;
+    private String PermiseType;
+    private String readerSerialNo;
+    private String referralId;
+    private String bankName;
+    private String bankAcc;
+    private String nricAcc;
+    private String waiverMonth;
+    private boolean enabled;
+    private BigInteger agID;
+    private BigInteger subAgID;
+    private String yearIncorporated;
+    private String ownerSalutation;
+    private String residentialAddress;
+    private String mdr;
+    private String preAuth;
+    private String auth3DS;
+    private String allowRecurring;
+    private String autoSettled;
+    private String dateOfBirth;
+    private String country;
+    private String currency;
+    private String merchantType;
+    private String approved;
+    private String ezyMotoVcc;
+    private String accType;
+    private String type;
+    private String mmId;
+    private String latitude;
+    private String longitude;
+    private String ipAddress;
+    private String macAddress;
+    private String contactIc;
+    private String icPhotoPath;
+    private String mobiId;
+    private String enableFraud;
+    private String fraudClientId;
+    private String merchantSector;
+    private String merchantCategory;
+    private String iSwitchEnable;
+    private String discountAmount;
+    private String enblPayout;
+    private String justsettle_swtcount;
+    private String jsCheckCount;
+    private String jsWithdrawCount;
+    private String iSwitchDiscount;
+    private String paymentDate;
+    private String enableCard;
+    private String enableEwallet;
+    private String enableFpx;
+    private String reActivateDate;
+    private String isCombo;
+    private String isEzywirePlus;
+    private String foreignCard;
+    private String integrationPlatform;
+    private String settlementEmail;
+    private String enableBnpl;
+    private String status;
+
+}
