@@ -5,9 +5,7 @@ import com.Merchant.Registration.Repository.MerchantRepository;
 import com.Merchant.Registration.Repository.MidRepository;
 import com.Merchant.Registration.Repository.MobileUserRepository;
 import com.Merchant.Registration.Response.RegResponse;
-import com.Merchant.Registration.Service.MIDService;
-import com.Merchant.Registration.Service.MerchantService;
-import com.Merchant.Registration.Service.MobileUserService;
+import com.Merchant.Registration.Service.*;
 import com.Merchant.Registration.entity.MID;
 import com.Merchant.Registration.entity.Merchant;
 import com.Merchant.Registration.entity.MerchantUserRole;
@@ -38,6 +36,11 @@ public class MerchantServiceImpl implements MerchantService {
     @Autowired
     private MobileUserService mobileUserService;
 
+    @Autowired
+    private MdrService mdrService;
+    @Autowired
+    private MDRRatesService mdrRatesService;
+
     @Override
     public String getMerchantBusinessShortNameByID(Long id) {
         return merchantRepository.getBusinessShortName(id);
@@ -65,6 +68,11 @@ public class MerchantServiceImpl implements MerchantService {
         long midId=midService.findIdBYShoppyMid(mid.getShoppyMid());
         System.out.println("MID GENERATION END");
         System.out.println("MID ID IN LONG : "+midId);
+        if(request.getEnableCard().equalsIgnoreCase("yes"))
+        {
+            System.out.println("Adding Mdr Rates ");
+            mdrRatesService.addNewMdrRates(request.getMdrRatesRequest(),mid.getMid());
+        }
 
 
         try {
@@ -81,6 +89,11 @@ public class MerchantServiceImpl implements MerchantService {
             System.out.println("ACTUAL REASON CAUSING ERROR--> "+e.getMessage());
             return new RegResponse("error","Exception while inserting ");
         }
+        if(request.getEnableEwallet().equalsIgnoreCase("yes"))
+        {
+            mdrService.insertMobiMdr(request.getMobiMdrRequest(),mid.getMid());
+        }
+
         return new RegResponse("Success","successFully inserted with the merchant id  :"+merchant.getId());
     }
 
@@ -180,10 +193,7 @@ public class MerchantServiceImpl implements MerchantService {
         {
             throw new BadRequestException("Invalid value for maximum amount per transaction: " + request.getMaxAmountPerTransaction());
         }
-        if(request.getMid()==null)
-        {
-            throw new BadRequestException("Mid should not be null");
-        }
+
     }
 
     private void validateRole(MerchantUserRole requiredRole)

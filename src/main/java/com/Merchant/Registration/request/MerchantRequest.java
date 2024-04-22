@@ -1,7 +1,7 @@
 package com.Merchant.Registration.request;
 
-import com.Merchant.Registration.entity.MID;
 import com.Merchant.Registration.entity.MerchantUserRole;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,7 +10,6 @@ import java.math.BigInteger;
 @Getter
 @Setter
 @ToString
-
 public class MerchantRequest {
     private long id;
     private String mid;
@@ -104,5 +103,7 @@ public class MerchantRequest {
     private String settlementEmail;
     private String enableBnpl;
     private String status;
+    private MdrRatesRequest mdrRatesRequest;
+    private MobiMdrRequest mobiMdrRequest;
 
 }
