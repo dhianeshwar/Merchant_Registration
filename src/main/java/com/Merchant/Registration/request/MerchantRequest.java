@@ -12,7 +12,6 @@ import java.math.BigInteger;
 @ToString
 public class MerchantRequest {
     private long id;
-    private String mid;
     private MerchantUserRole role;
     private String businessAddress2;
     private String businessAddress3;
@@ -35,7 +34,6 @@ public class MerchantRequest {
     private String username;
     private String email;
     private String password;
-    private int failedLoginAttempt;
     private Integer maxAmountPerTransaction;
     private Integer maxAmountPerMonth;
     private String tradingName;
@@ -92,18 +90,14 @@ public class MerchantRequest {
     private String jsWithdrawCount;
     private String iSwitchDiscount;
     private String paymentDate;
-    private String enableCard;
-    private String enableEwallet;
-    private String enableFpx;
     private String reActivateDate;
     private String isCombo;
     private String isEzywirePlus;
-    private String foreignCard;
     private String integrationPlatform;
     private String settlementEmail;
-    private String enableBnpl;
-    private String status;
-    private MdrRatesRequest mdrRatesRequest;
-    private MobiMdrRequest mobiMdrRequest;
+    private String cardType;
+    private String hostType;
+    private MdrRequest mdrRates;
+    private ServiceNeeded serviceNeeded;
 
 }

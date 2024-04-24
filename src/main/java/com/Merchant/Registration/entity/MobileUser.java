@@ -1,10 +1,7 @@
 package com.Merchant.Registration.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -14,11 +11,16 @@ import java.io.Serializable;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Table(name = "MOBILE_USER")
 public class MobileUser implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+
+    @Version
+    @Column(name = "VERSION")
+    private int version;
 
     @Column(length = (int) 50, nullable = false)
     private String username;
@@ -26,12 +28,16 @@ public class MobileUser implements Serializable {
     @Column(length = (int) 250, nullable = false)
     private String password;
 
+    @Column(name="EMAIL")
+    private String email;
+
     @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "MERCHANT_FK")
     private Merchant merchant;
 
-    @Column
+    @Column(name="failedLoginAttempt")
     private int failedLoginAttempt;
+
 
     @Column
     private boolean permissionVoid;

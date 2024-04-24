@@ -35,8 +35,8 @@ public interface MidRepository extends JpaRepository<MID,Long> {
     Set<String> findAllTngMidNotNull();
     @Query(value = "SELECT m.SHOPPY_MID FROM mobiversa.mid m;",nativeQuery = true)
     Set<String> findAllShoppyMidNotNull();
-    @Query(value = "SELECT m.id FROM mobiversa.mid m WHERE m.SHOPPY_MID= :shoppyMid",nativeQuery = true)
-    Long findID(@Param("shoppyMid") String shoppyMid);
+    @Query(value = "SELECT m.id FROM mobiversa.mid m WHERE m.MID= :Mid",nativeQuery = true)
+    Long findID(@Param("Mid") String Mid);
 
     @Query(value =
             "SELECT m.mid AS value FROM MID m " +
@@ -47,6 +47,12 @@ public interface MidRepository extends JpaRepository<MID,Long> {
                     "UNION ALL " +
                     "SELECT m.TNG_MID AS value FROM MID m WHERE m.TNG_MID IS NOT NULL " +
                     "UNION ALL " +
+                    "SELECT m.FPX_MID AS value FROM MID m WHERE m.FPX_MID IS NOT NULL " +
+                    "UNION ALL " +
+                    "SELECT m.BNPL_MID AS value FROM MID m WHERE m.BNPL_MID IS NOT NULL " +
+                    "UNION ALL " +
+                    "SELECT m.EZYWAY_MID AS value FROM MID m WHERE m.EZYWAY_MID IS NOT NULL " +
+                    "UNION ALL " +
                     "SELECT m.SHOPPY_MID AS value FROM MID m WHERE m.SHOPPY_MID IS NOT NULL",
             nativeQuery = true)
     Set<String> findAllUniqueMIDs();
@@ -54,4 +60,9 @@ public interface MidRepository extends JpaRepository<MID,Long> {
     @Query(value = "SELECT m.MERCHANT_FK FROM  MID m WHERE m.ID=:id ",nativeQuery = true)
     long findByMid(@Param("id") long id);
 
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE mobiversa.mid mi SET mi.MERCHANT_FK=:merchantFk where mi.MID=:mid",nativeQuery = true)
+    void mapMerchant(@Param("merchantFk") long merchantFk,
+                     @Param("mid") String mid);
 }

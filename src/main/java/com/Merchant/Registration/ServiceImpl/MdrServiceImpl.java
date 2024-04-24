@@ -4,10 +4,8 @@ import com.Merchant.Registration.Exception.BadRequestException;
 import com.Merchant.Registration.Repository.MobiMdrRepository;
 import com.Merchant.Registration.Service.MdrService;
 import com.Merchant.Registration.Utility.NumberValidation;
-import com.Merchant.Registration.Utility.RetrieveProperties;
-import com.Merchant.Registration.entity.MdrRates;
+import com.Merchant.Registration.Utility.FloatValidation;
 import com.Merchant.Registration.entity.MobiMdr;
-import com.Merchant.Registration.request.MerchantRequest;
 import com.Merchant.Registration.request.MobiMdrRequest;
 import org.springframework.stereotype.Service;
 
@@ -22,9 +20,9 @@ public class MdrServiceImpl implements MdrService {
     }
 
 
-    @Override
+    @Override//not in use
     public MobiMdr insertMobiMdr(MobiMdrRequest request,String mid) {
-        validateRequest(request);
+        FloatValidation.validate(request);
        MobiMdr mobiMdr=requestToEntity(request);
         System.out.println("mapped mid in Mobiversa_mdr table ::"+mid);
        mobiMdr.setMid(mid);
@@ -40,10 +38,7 @@ public class MdrServiceImpl implements MdrService {
     }
 
 
-    private void validateRequest(MobiMdrRequest request) {
-        if(!NumberValidation.areAllValidFloats(RetrieveProperties.getAllFloatValues(request)))
-            throw new BadRequestException("Not a valid MDR rates");
-    }
+
 
 
     private static MobiMdr requestToEntity(MobiMdrRequest request)

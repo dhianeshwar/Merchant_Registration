@@ -1,10 +1,7 @@
 package com.Merchant.Registration.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -13,11 +10,16 @@ import java.io.Serializable;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Table (name = "MID")
 public class MID implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @Version
+    @Column(name="VERSION")
+    private int version;
 
     @ManyToOne(cascade={CascadeType.ALL})
     @JoinColumn(name = "MERCHANT_FK")

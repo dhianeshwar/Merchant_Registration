@@ -8,12 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 public class MdrRatesRequest {
-    private Long id;
-    private String productId;
-    private String rateId;
-    private String validFrom;
-    private String validTo;
-    private String midMapped;
+
     private float boostMdr;
     private float grabpayMdr;
     private String hostType;
@@ -50,10 +45,9 @@ public class MdrRatesRequest {
     private float debitForeignMcMobi;
     private float creditForeignMcMobi;
     private float debitLocalUpMobi;
-    private float creditLocalUpMobi;
+
     private float debitForeignUpMobi;
     private float creditForeignUpMobi;
-    private String timeStamp;
     private String ipAddress;
     private String userRefference;
 }

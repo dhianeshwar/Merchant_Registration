@@ -3,6 +3,9 @@ package com.Merchant.Registration.ServiceImpl;
 import com.Merchant.Registration.Repository.MidRepository;
 import com.Merchant.Registration.Service.MIDService;
 import com.Merchant.Registration.entity.MID;
+import com.Merchant.Registration.entity.Merchant;
+import com.Merchant.Registration.request.ServiceNeeded;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -17,35 +20,57 @@ public class MIDServiceImpl implements MIDService {
         this.midRepository = midRepository;
     }
 
-    public MID generateMid() {
+    @Transactional
+    public MID generateMid(ServiceNeeded serviceNeeded, Merchant merchant) {
         Set<String> existingStrings = midRepository.findAllUniqueMIDs();
-
+        MID mid = new MID();
         System.out.println("LENGTH OF THE SET :  "+existingStrings.size());
-
-        String boostMid = "BST"+generateUniqueRandomString(existingStrings, 12);
-        String grabMid = "GRB"+generateUniqueRandomString(existingStrings, 12);
-        String tngMid = "TNG"+generateUniqueRandomString(existingStrings, 12);
-        String shoppyMid = "SPP"+generateUniqueRandomString(existingStrings, 12);
         String midString = generateUniqueRandomString(existingStrings, 16);
-
         System.out.println("MID : "+midString);
-        System.out.println("BOOST MID : "+boostMid);
-        System.out.println("GRAB MID : "+grabMid);
-        System.out.println("TNG MID : "+tngMid);
-        System.out.println("SHOPPY MID : "+shoppyMid);
+        mid.setMid(midString);
 
 
-        MID newMid = new MID();
+        if(serviceNeeded.isBoostNeeded()){
+            String boostMid = "BST"+generateUniqueRandomString(existingStrings, 12);
+            System.out.println("BOOST MID : "+boostMid);
+            mid.setBoostMid(boostMid);
+        }
 
-        newMid.setMid(midString);
-        newMid.setBoostMid(boostMid);
-        newMid.setGrabMid(grabMid);
-        newMid.setTngMid(tngMid);
-        newMid.setShoppyMid(shoppyMid);
+        if(serviceNeeded.isGrabNeeded()) {
+            String grabMid = "GRB"+generateUniqueRandomString(existingStrings, 12);
+            System.out.println("GRAB MID : "+grabMid);
+            mid.setGrabMid(grabMid);
 
-        midRepository.insertMID(boostMid,grabMid,tngMid,shoppyMid,midString);
+        }
+        if(serviceNeeded.isTngNeeded()){
+            String tngMid = "TNG"+generateUniqueRandomString(existingStrings, 12);
+            System.out.println("TNG MID : "+tngMid);
+            mid.setTngMid(tngMid);
 
-        return newMid;
+        }
+        if(serviceNeeded.isSppNeeded()){
+            String shoppyMid = "SPP"+generateUniqueRandomString(existingStrings, 12);
+            System.out.println("SHOPPY MID : "+shoppyMid);
+            mid.setShoppyMid(shoppyMid);
+        }
+        if(serviceNeeded.isFpxNeeded()){
+            String fpxMid = "FPX"+generateUniqueRandomString(existingStrings, 12);
+            System.out.println("FPX MID : "+fpxMid);
+            mid.setFpxMid(fpxMid);
+        }
+        if(serviceNeeded.isBnplNeeded()){
+            String bnplMid = "BNP"+generateUniqueRandomString(existingStrings, 12);
+            System.out.println("BNPL MID : "+bnplMid);
+            mid.setBnplMid(bnplMid);
+        }
+        if(serviceNeeded.isLocalCardNeeded() || serviceNeeded.isForeignCardNeeded()){
+            String ezywayMid = "EZYWAY"+generateUniqueRandomString(existingStrings, 12);
+            System.out.println("EZYWAY MID : "+ezywayMid);
+            mid.setEzywayMid(ezywayMid);
+        }
+//        mid.setMerchant(merchant);
+        return midRepository.save(mid);
+
     }
 
     private String generateUniqueRandomString(Set<String> existingStrings, int length) {

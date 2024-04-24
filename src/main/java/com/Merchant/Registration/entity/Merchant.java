@@ -20,6 +20,10 @@ public class Merchant implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    @Version
+    @Column(name="VERSION")
+    private int version;
+
     @ManyToOne(cascade={CascadeType.ALL})
     @JoinColumn(name = "MID_FK")
     private MID mid;
@@ -90,7 +94,8 @@ public class Merchant implements Serializable {
     @Column(length=(int) 250, nullable=false)
     private String password;
 
-    private final int failedLoginAttempt = 0;
+    @Column(name="failedLoginAttempt")
+    private  int failedLoginAttempt=0;
 
     @Column(name="MAX_AMOUNT_PER_Transaction", length=(int) 100, nullable=false)
     private Integer maxAmountPerTransaction;
@@ -292,4 +297,8 @@ public class Merchant implements Serializable {
 
     @Column(name = "STATUS")
     private String status;
+
+    @Column(name="PAYOUTGRANDDETAIL_FK")
+    private long payOutGrandDetailFk;
+
 }

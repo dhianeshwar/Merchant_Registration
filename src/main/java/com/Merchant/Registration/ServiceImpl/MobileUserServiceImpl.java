@@ -4,9 +4,12 @@ import com.Merchant.Registration.Repository.MobileUserRepository;
 import com.Merchant.Registration.Service.MobileUserService;
 import com.Merchant.Registration.entity.Merchant;
 import com.Merchant.Registration.entity.MobileUser;
+import com.Merchant.Registration.request.ServiceNeeded;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -18,18 +21,34 @@ public class MobileUserServiceImpl implements MobileUserService {
         this.mobileUserRepository=mobileUserRepository;
     }
     @Override
-    public MobileUser generateTid(Merchant merchant,long merchantId) {
-        String boostTid,grabTid,tngTid,shoppyTid,TidString,userName,password;
-        boolean permissionSettle= false;
-        boolean permissionVoid= false;
+    @Transactional
+    public MobileUser generateTid(Merchant merchant,ServiceNeeded request,long merchantId) {
+        MobileUser newMobileUser = new MobileUser();
+
+        newMobileUser.setStatus(merchant.getStatus());
+        newMobileUser.setEmail(merchant.getEmail());
+        newMobileUser.setUsername(merchant.getUsername());
+        newMobileUser.setDateOfBirth(merchant.getDateOfBirth());
+        newMobileUser.setPassword(merchant.getPassword());
+        newMobileUser.setEnableSettelementPayout("No");
+        newMobileUser.setPermissionSettle(false);
+        newMobileUser.setPermissionVoid(false);
+
+        String boostTid=null,grabTid=null,tngTid=null,shoppyTid=null,TidString=null;
+
+
         List<String> existingTid ;
 
         do
         {
-             boostTid = generateUniqueRandomString();
+            if(request.isBoostNeeded())
+                boostTid = generateUniqueRandomString();
+            if(request.isGrabNeeded())
              grabTid = generateUniqueRandomString();
-             tngTid = generateUniqueRandomString();
-             shoppyTid = generateUniqueRandomString();
+            if(request.isTngNeeded())
+                tngTid = generateUniqueRandomString();
+            if(request.isSppNeeded())
+                shoppyTid = generateUniqueRandomString();
              TidString = generateUniqueRandomString();
 
             existingTid=mobileUserRepository.existsBYAnyTids(TidString,boostTid,grabTid,tngTid,shoppyTid);
@@ -43,23 +62,24 @@ public class MobileUserServiceImpl implements MobileUserService {
         System.out.println("TNG Tid : "+tngTid);
         System.out.println("SHOPPY Tid : "+shoppyTid);
 
-        userName=merchant.getUsername();
-        password=merchant.getPassword();
 
-        MobileUser newMobileUser = new MobileUser();
 
         newMobileUser.setTid(TidString);
         newMobileUser.setBoostTid(boostTid);
         newMobileUser.setGpayTid(grabTid);
         newMobileUser.setTngTid(tngTid);
         newMobileUser.setShoppyTid(shoppyTid);
-        newMobileUser.setUsername(userName);
-        newMobileUser.setPassword(password);
+        newMobileUser.setFailedLoginAttempt(0);
+
+
 
 
         try{
-            mobileUserRepository.insertMobileUser(TidString,boostTid,grabTid,tngTid,shoppyTid,merchantId,permissionSettle,permissionVoid,userName,password);
+            System.out.println(newMobileUser);
+            mobileUserRepository.insertMobileUser(TidString,boostTid,grabTid,tngTid,shoppyTid,merchantId,false,false,merchant.getUsername(),merchant.getPassword());
+            System.out.println("Mobile user saved ");
         }
+
         catch (Exception e)
         {
             e.printStackTrace();

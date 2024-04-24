@@ -11,6 +11,7 @@ import com.Merchant.Registration.entity.Merchant;
 import com.Merchant.Registration.entity.MerchantUserRole;
 import com.Merchant.Registration.entity.MobileUser;
 import com.Merchant.Registration.request.MerchantRequest;
+import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,69 +56,50 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
+    @Transactional
     public RegResponse addNewMerchant(MerchantRequest request) {
 
         validateRequest(request);
 
-        Merchant merchant=new Merchant();
-        merchant=requestToMerchant(merchant,request);
+        Merchant merchant=requestToMerchant(request);
+        merchant.setPayOutGrandDetailFk(1);
+        merchant.setFailedLoginAttempt(0);
+
+
         System.out.println("MID GENERATION START");
-        MID mid=midService.generateMid();//inserted mid without merchant_fk
+        MID mid=midService.generateMid(request.getServiceNeeded(),merchant);//inserted mid without merchant
         merchant.setMid(mid);
-        System.out.println("Test---->"+mid.getId());
-        long midId=midService.findIdBYShoppyMid(mid.getShoppyMid());
-        System.out.println("MID GENERATION END");
-        System.out.println("MID ID IN LONG : "+midId);
-        if(request.getEnableCard().equalsIgnoreCase("yes"))
+        System.out.println("MID SAVED SUCCESSFULLY -->"+mid);
+        System.out.println("SAVED MID WITH THR REQUIRED SERVICE WITH MERCHANT MAPPED");
+
+        System.out.println("Adding Mdr Rates ");
+        mdrRatesService.addNewMdrRates(request.getServiceNeeded(),request.getMdrRates(),mid.getMid(),request.getCardType());
+        System.out.println("Saved Mdr Rates in the MOBIVERSA_MDR table");
+
+
+        try
         {
-            System.out.println("Adding Mdr Rates ");
-            mdrRatesService.addNewMdrRates(request.getMdrRatesRequest(),mid.getMid());
+            System.out.println("Id for the MID table----->"+mid.getId());
+            merchantRepository.addMerchantNativeQuery(merchant,mid.getId());//added merchant with MID
         }
-
-
-        try {
-
-            merchantRepository.addMerchantNativeQuery(merchant,midId);//added merchant with MID-fk
-            long merchant_fk_for_mobileUser=merchantRepository.findIdByMid_fk(midId);
-
-            mobileUserService.generateTid(merchant,merchant_fk_for_mobileUser);
-            System.out.println("MOBILE USER Inserted Successfully");
-
-        }catch (Exception e)
+        catch (Exception e)
         {
             e.printStackTrace();
             System.out.println("ACTUAL REASON CAUSING ERROR--> "+e.getMessage());
             return new RegResponse("error","Exception while inserting ");
         }
-        if(request.getEnableEwallet().equalsIgnoreCase("yes"))
-        {
-            mdrService.insertMobiMdr(request.getMobiMdrRequest(),mid.getMid());
-        }
+        long merchantIdFk=merchantRepository.findIdByMid_fk(mid.getId());
+        mobileUserService.generateTid(merchant,request.getServiceNeeded(),merchantIdFk);
+        System.out.println("MOBILE USER Inserted Successfully");
 
         return new RegResponse("Success","successFully inserted with the merchant id  :"+merchant.getId());
-    }
-
-
-
-
-
-    private void addMobileUser(MerchantRequest request,Merchant merchant) {
-        MobileUser mobileUser=new MobileUser();
-        mobileUser.setEnableSettelementPayout("yes");
-        mobileUser.setDateOfBirth(request.getDateOfBirth());
-        mobileUser.setPassword(request.getPassword());
-        mobileUser.setStatus(request.getStatus());
-        mobileUser.setMerchant(merchant);
-
-        mobileUserRepository.save(mobileUser);
-
     }
 
     @Override
     public RegResponse updateExistingMerchant(MerchantRequest request) {
         Merchant merchant= getMerchantFromDataBase(request.getId());
         userValidation(request.getUsername(),request.getPassword(),merchant.getUsername(),merchant.getPassword());
-        requestToMerchant(merchant,request);
+         merchant=requestToMerchant(request);
         if(request.getMaxAmountPerMonth()!=null)
             if(request.getMaxAmountPerMonth()<0)
                 throw new BadRequestException("Invalid value for maximum amount per month: " + request.getMaxAmountPerMonth());
@@ -211,18 +193,13 @@ public class MerchantServiceImpl implements MerchantService {
             throw new BadRequestException("invalid Role");
     }
 
-    private MID getMidFromDataBase(String mid)
-    {
 
-        return midRepository.findByMid(mid)
-                .orElseThrow(()->
-                        new BadRequestException("Your Mid does not match with our database"));
-    }
     private Merchant getMerchantFromDataBase(Long id) {
         return merchantRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("No merchant found with the provided id "));
     }
-    private Merchant requestToMerchant(Merchant merchant,MerchantRequest request) {
+    private Merchant requestToMerchant(MerchantRequest request) {
+        Merchant merchant=new Merchant();
 
         if (!StringUtils.isBlank(request.getBusinessAddress1())) {
             merchant.setBusinessAddress1(request.getBusinessAddress1());
@@ -278,18 +255,8 @@ public class MerchantServiceImpl implements MerchantService {
         if (!StringUtils.isBlank(request.getEmail())) {
             merchant.setEmail(request.getEmail());
         }
-        if (!StringUtils.isBlank(request.getEnableBnpl())) {
-            merchant.setEnableBnpl(request.getEnableBnpl());
-        }
-        if (!StringUtils.isBlank(request.getEnableCard())) {
-            merchant.setEnableCard(request.getEnableCard());
-        }
-        if (!StringUtils.isBlank(request.getEnableEwallet())) {
-            merchant.setEnableEwallet(request.getEnableEwallet());
-        }
-        if (!StringUtils.isBlank(request.getEnableFpx())) {
-            merchant.setEnableFpx(request.getEnableFpx());
-        }
+
+
         if (!StringUtils.isBlank(request.getEnableFraud())) {
             merchant.setEnableFraud(request.getEnableFraud());
         }
@@ -460,18 +427,29 @@ public class MerchantServiceImpl implements MerchantService {
         if (!StringUtils.isBlank(request.getIsEzywirePlus())) {
             merchant.setIsEzywirePlus(request.getIsEzywirePlus());
         }
-        if (!StringUtils.isBlank(request.getForeignCard())) {
-            merchant.setForeignCard(request.getForeignCard());
-        }
+
         if (!StringUtils.isBlank(request.getIntegrationPlatform())) {
             merchant.setIntegrationPlatform(request.getIntegrationPlatform());
         }
         if (!StringUtils.isBlank(request.getSettlementEmail())) {
             merchant.setSettlementEmail(request.getSettlementEmail());
         }
-        if (!StringUtils.isBlank(request.getStatus())) {
-            merchant.setStatus(request.getStatus());
-        }
+
+        merchant.setStatus("ACTIVE");
+        if(
+                request.getServiceNeeded().isBoostNeeded() ||
+                request.getServiceNeeded().isGrabNeeded() ||
+                request.getServiceNeeded().isTngNeeded()
+        )
+            merchant.setEnableEwallet("Yes");
+        if(request.getServiceNeeded().isFpxNeeded())
+            merchant.setEnableFpx("yes");
+        if(request.getServiceNeeded().isBnplNeeded())
+            merchant.setEnableBnpl("yes");
+        if(request.getServiceNeeded().isLocalCardNeeded())
+            merchant.setEnableCard("yes");
+        if(request.getServiceNeeded().isForeignCardNeeded())
+            merchant.setForeignCard("yes");
 
         return merchant;
     }
