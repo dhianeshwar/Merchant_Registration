@@ -9,7 +9,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -38,23 +37,22 @@ public class MobileUserServiceImpl implements MobileUserService {
 
 
         List<String> existingTid ;
+        if(request!=null) {
+            do {
+                if (request.isBoostNeeded())
+                    boostTid = generateUniqueRandomString();
+                if (request.isGrabNeeded())
+                    grabTid = generateUniqueRandomString();
+                if (request.isTngNeeded())
+                    tngTid = generateUniqueRandomString();
+                if (request.isSppNeeded())
+                    shoppyTid = generateUniqueRandomString();
+                TidString = generateUniqueRandomString();
 
-        do
-        {
-            if(request.isBoostNeeded())
-                boostTid = generateUniqueRandomString();
-            if(request.isGrabNeeded())
-             grabTid = generateUniqueRandomString();
-            if(request.isTngNeeded())
-                tngTid = generateUniqueRandomString();
-            if(request.isSppNeeded())
-                shoppyTid = generateUniqueRandomString();
-             TidString = generateUniqueRandomString();
+                existingTid = mobileUserRepository.existsBYAnyTids(TidString, boostTid, grabTid, tngTid, shoppyTid);
+            } while (!existingTid.isEmpty());
 
-            existingTid=mobileUserRepository.existsBYAnyTids(TidString,boostTid,grabTid,tngTid,shoppyTid);
-        }while (!existingTid.isEmpty());
-
-
+        }
 
         System.out.println("Tid : "+TidString);
         System.out.println("BOOST Tid : "+boostTid);
@@ -71,13 +69,10 @@ public class MobileUserServiceImpl implements MobileUserService {
         newMobileUser.setShoppyTid(shoppyTid);
         newMobileUser.setFailedLoginAttempt(0);
 
-
-
-
         try{
             System.out.println(newMobileUser);
             mobileUserRepository.insertMobileUser(TidString,boostTid,grabTid,tngTid,shoppyTid,merchantId,false,false,merchant.getUsername(),merchant.getPassword());
-            System.out.println("Mobile user saved ");
+            System.out.println("Mobile user saved with MERCHANT Mapped");
         }
 
         catch (Exception e)

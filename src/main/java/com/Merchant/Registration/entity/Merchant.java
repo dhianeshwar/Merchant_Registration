@@ -299,6 +299,6 @@ public class Merchant implements Serializable {
     private String status;
 
     @Column(name="PAYOUTGRANDDETAIL_FK")
-    private long payOutGrandDetailFk;
+    private Long payOutGrandDetailFk;
 
 }

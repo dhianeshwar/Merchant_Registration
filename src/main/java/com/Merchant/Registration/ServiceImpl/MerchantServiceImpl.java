@@ -62,7 +62,7 @@ public class MerchantServiceImpl implements MerchantService {
         validateRequest(request);
 
         Merchant merchant=requestToMerchant(request);
-        merchant.setPayOutGrandDetailFk(1);
+        merchant.setPayOutGrandDetailFk(null);
         merchant.setFailedLoginAttempt(0);
 
 
@@ -73,8 +73,10 @@ public class MerchantServiceImpl implements MerchantService {
         System.out.println("SAVED MID WITH THR REQUIRED SERVICE WITH MERCHANT MAPPED");
 
         System.out.println("Adding Mdr Rates ");
-        mdrRatesService.addNewMdrRates(request.getServiceNeeded(),request.getMdrRates(),mid.getMid(),request.getCardType());
-        System.out.println("Saved Mdr Rates in the MOBIVERSA_MDR table");
+        if(request.getServiceNeeded()!=null) {
+            mdrRatesService.addNewMdrRates(request.getServiceNeeded(), request.getMdrRates(), mid.getMid(), request.getCardType());
+            System.out.println("Saved Mdr Rates in the MOBIVERSA_MDR table");
+        }
 
 
         try
@@ -92,7 +94,10 @@ public class MerchantServiceImpl implements MerchantService {
         mobileUserService.generateTid(merchant,request.getServiceNeeded(),merchantIdFk);
         System.out.println("MOBILE USER Inserted Successfully");
 
-        return new RegResponse("Success","successFully inserted with the merchant id  :"+merchant.getId());
+        midRepository.mapMerchant(merchantIdFk,mid.getMid());
+        System.out.println("Merchant Mapped with MID");
+
+        return new RegResponse("Success","successFully inserted with the merchant id  :"+merchantIdFk);
     }
 
     @Override
@@ -436,20 +441,22 @@ public class MerchantServiceImpl implements MerchantService {
         }
 
         merchant.setStatus("ACTIVE");
-        if(
-                request.getServiceNeeded().isBoostNeeded() ||
-                request.getServiceNeeded().isGrabNeeded() ||
-                request.getServiceNeeded().isTngNeeded()
-        )
-            merchant.setEnableEwallet("Yes");
-        if(request.getServiceNeeded().isFpxNeeded())
-            merchant.setEnableFpx("yes");
-        if(request.getServiceNeeded().isBnplNeeded())
-            merchant.setEnableBnpl("yes");
-        if(request.getServiceNeeded().isLocalCardNeeded())
-            merchant.setEnableCard("yes");
-        if(request.getServiceNeeded().isForeignCardNeeded())
-            merchant.setForeignCard("yes");
+        if(request.getServiceNeeded()!=null) {
+            if (
+                    request.getServiceNeeded().isBoostNeeded() ||
+                            request.getServiceNeeded().isGrabNeeded() ||
+                            request.getServiceNeeded().isTngNeeded()
+            )
+                merchant.setEnableEwallet("Yes");
+            if (request.getServiceNeeded().isFpxNeeded())
+                merchant.setEnableFpx("yes");
+            if (request.getServiceNeeded().isBnplNeeded())
+                merchant.setEnableBnpl("yes");
+            if (request.getServiceNeeded().isLocalCardNeeded())
+                merchant.setEnableCard("yes");
+            if (request.getServiceNeeded().isForeignCardNeeded())
+                merchant.setForeignCard("yes");
+        }
 
         return merchant;
     }

@@ -28,8 +28,6 @@ public interface MobileUserRepository extends JpaRepository<MobileUser,Long> {
                   @Param("permissionVoid") boolean permissionVoid,
                          @Param("userName") String userName,
                          @Param("password") String password
-
-
                          );
 @Query("SELECT DISTINCT CASE  " +
         "       WHEN m.tid = :tid THEN 'tid'  " +

@@ -29,44 +29,45 @@ public class MIDServiceImpl implements MIDService {
         System.out.println("MID : "+midString);
         mid.setMid(midString);
 
+        if(serviceNeeded!=null) {
+            if (serviceNeeded.isBoostNeeded()) {
+                String boostMid = "BST" + generateUniqueRandomString(existingStrings, 12);
+                System.out.println("BOOST MID : " + boostMid);
+                mid.setBoostMid(boostMid);
+            }
 
-        if(serviceNeeded.isBoostNeeded()){
-            String boostMid = "BST"+generateUniqueRandomString(existingStrings, 12);
-            System.out.println("BOOST MID : "+boostMid);
-            mid.setBoostMid(boostMid);
-        }
+            if (serviceNeeded.isGrabNeeded()) {
+                String grabMid = "GRB" + generateUniqueRandomString(existingStrings, 12);
+                System.out.println("GRAB MID : " + grabMid);
+                mid.setGrabMid(grabMid);
 
-        if(serviceNeeded.isGrabNeeded()) {
-            String grabMid = "GRB"+generateUniqueRandomString(existingStrings, 12);
-            System.out.println("GRAB MID : "+grabMid);
-            mid.setGrabMid(grabMid);
+            }
+            if (serviceNeeded.isTngNeeded()) {
+                String tngMid = "TNG" + generateUniqueRandomString(existingStrings, 12);
+                System.out.println("TNG MID : " + tngMid);
+                mid.setTngMid(tngMid);
 
-        }
-        if(serviceNeeded.isTngNeeded()){
-            String tngMid = "TNG"+generateUniqueRandomString(existingStrings, 12);
-            System.out.println("TNG MID : "+tngMid);
-            mid.setTngMid(tngMid);
-
-        }
-        if(serviceNeeded.isSppNeeded()){
-            String shoppyMid = "SPP"+generateUniqueRandomString(existingStrings, 12);
-            System.out.println("SHOPPY MID : "+shoppyMid);
-            mid.setShoppyMid(shoppyMid);
-        }
-        if(serviceNeeded.isFpxNeeded()){
-            String fpxMid = "FPX"+generateUniqueRandomString(existingStrings, 12);
-            System.out.println("FPX MID : "+fpxMid);
-            mid.setFpxMid(fpxMid);
-        }
-        if(serviceNeeded.isBnplNeeded()){
-            String bnplMid = "BNP"+generateUniqueRandomString(existingStrings, 12);
-            System.out.println("BNPL MID : "+bnplMid);
-            mid.setBnplMid(bnplMid);
-        }
-        if(serviceNeeded.isLocalCardNeeded() || serviceNeeded.isForeignCardNeeded()){
-            String ezywayMid = "EZYWAY"+generateUniqueRandomString(existingStrings, 12);
-            System.out.println("EZYWAY MID : "+ezywayMid);
-            mid.setEzywayMid(ezywayMid);
+            }
+            if (serviceNeeded.isSppNeeded()) {
+                String shoppyMid = "SPP" + generateUniqueRandomString(existingStrings, 12);
+                System.out.println("SHOPPY MID : " + shoppyMid);
+                mid.setShoppyMid(shoppyMid);
+            }
+            if (serviceNeeded.isFpxNeeded()) {
+                String fpxMid = "FPX" + generateUniqueRandomString(existingStrings, 12);
+                System.out.println("FPX MID : " + fpxMid);
+                mid.setFpxMid(fpxMid);
+            }
+            if (serviceNeeded.isBnplNeeded()) {
+                String bnplMid = "BNP" + generateUniqueRandomString(existingStrings, 12);
+                System.out.println("BNPL MID : " + bnplMid);
+                mid.setBnplMid(bnplMid);
+            }
+            if (serviceNeeded.isLocalCardNeeded() || serviceNeeded.isForeignCardNeeded()) {
+                String ezywayMid = "EZYWAY" + generateUniqueRandomString(existingStrings, 12);
+                System.out.println("EZYWAY MID : " + ezywayMid);
+                mid.setEzywayMid(ezywayMid);
+            }
         }
 //        mid.setMerchant(merchant);
         return midRepository.save(mid);

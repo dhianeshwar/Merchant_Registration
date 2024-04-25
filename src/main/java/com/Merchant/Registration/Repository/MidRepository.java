@@ -57,6 +57,7 @@ public interface MidRepository extends JpaRepository<MID,Long> {
             nativeQuery = true)
     Set<String> findAllUniqueMIDs();
 
+
     @Query(value = "SELECT m.MERCHANT_FK FROM  MID m WHERE m.ID=:id ",nativeQuery = true)
     long findByMid(@Param("id") long id);
 
