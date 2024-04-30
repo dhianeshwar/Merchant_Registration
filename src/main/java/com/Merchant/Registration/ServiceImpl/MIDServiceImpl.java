@@ -22,6 +22,7 @@ public class MIDServiceImpl implements MIDService {
 
     @Transactional
     public MID generateMid(ServiceNeeded serviceNeeded, Merchant merchant) {
+        System.out.println("Required Services::::"+serviceNeeded);
         Set<String> existingStrings = midRepository.findAllUniqueMIDs();
         MID mid = new MID();
         System.out.println("LENGTH OF THE SET :  "+existingStrings.size());
@@ -68,6 +69,17 @@ public class MIDServiceImpl implements MIDService {
                 System.out.println("EZYWAY MID : " + ezywayMid);
                 mid.setEzywayMid(ezywayMid);
             }
+            if (serviceNeeded.isEzyMotoNeeded()) {
+                String ezyMoto = "MOTO" + generateUniqueRandomString(existingStrings, 12);
+                System.out.println("UM MOTO MID : " + ezyMoto);
+                mid.setUmMotoMid(ezyMoto);
+            }
+            if (serviceNeeded.isEzyWayNeeded()) {
+                String ezyWay = "WAY" + generateUniqueRandomString(existingStrings, 12);
+                System.out.println("UM EZYWAY MID : " + ezyWay);
+                mid.setUmEzywayMid(ezyWay);
+            }
+
         }
 //        mid.setMerchant(merchant);
         return midRepository.save(mid);

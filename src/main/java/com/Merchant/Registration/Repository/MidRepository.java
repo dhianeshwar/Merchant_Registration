@@ -53,7 +53,11 @@ public interface MidRepository extends JpaRepository<MID,Long> {
                     "UNION ALL " +
                     "SELECT m.EZYWAY_MID AS value FROM MID m WHERE m.EZYWAY_MID IS NOT NULL " +
                     "UNION ALL " +
-                    "SELECT m.SHOPPY_MID AS value FROM MID m WHERE m.SHOPPY_MID IS NOT NULL",
+                    "SELECT m.SHOPPY_MID AS value FROM MID m WHERE m.SHOPPY_MID IS NOT NULL "+
+                    "UNION ALL "+
+                    "SELECT m.UM_EZYWAY_MID AS value FROM MID m WHERE m.UM_EZYWAY_MID IS NOT NULL "+
+                    "UNION ALL "+
+                    "SELECT m.UM_MOTO_MID AS value FROM MID m WHERE m.UM_MOTO_MID IS NOT NULL ",
             nativeQuery = true)
     Set<String> findAllUniqueMIDs();
 

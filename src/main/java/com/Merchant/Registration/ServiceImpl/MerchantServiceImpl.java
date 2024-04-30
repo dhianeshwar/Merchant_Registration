@@ -16,10 +16,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.security.SecureRandom;
-import java.text.ParseException;
+
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -41,6 +40,9 @@ public class MerchantServiceImpl implements MerchantService {
     private MdrService mdrService;
     @Autowired
     private MDRRatesService mdrRatesService;
+
+    @Autowired
+    private TerminalDetailsService terminalDetailsService;
 
     @Override
     public String getMerchantBusinessShortNameByID(Long id) {
@@ -91,13 +93,20 @@ public class MerchantServiceImpl implements MerchantService {
             return new RegResponse("error","Exception while inserting ");
         }
         long merchantIdFk=merchantRepository.findIdByMid_fk(mid.getId());
-        mobileUserService.generateTid(merchant,request.getServiceNeeded(),merchantIdFk);
+        MobileUser mobileUser=mobileUserService.generateTid(merchant,request.getServiceNeeded(),merchantIdFk);
         System.out.println("MOBILE USER Inserted Successfully");
+
 
         midRepository.mapMerchant(merchantIdFk,mid.getMid());
         System.out.println("Merchant Mapped with MID");
 
-        return new RegResponse("Success","successFully inserted with the merchant id  :"+merchantIdFk);
+        Map<String,String> response=terminalDetailsService.addTerminalDetails(request.getServiceNeeded(), mid, mobileUser,merchant);
+        if(response!=null)
+            System.out.println("Terminal details added Successfully");
+
+
+
+        return new RegResponse("Success","successFully inserted with the merchant id  :"+merchantIdFk,response);
     }
 
     @Override

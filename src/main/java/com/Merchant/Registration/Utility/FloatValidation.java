@@ -27,7 +27,7 @@ public class FloatValidation {
                     if(!isValidFloat(value))
                     {
                         System.out.println("FLOAT MISMATCH method::"+method.getName());
-                        throw new BadRequestException(key+"and value is "+value+ "  is not a valid(need it in decimal) Mdr");
+                        throw new BadRequestException(key+" and value is "+value+ "  is not a valid(need it in decimal) Mdr");
                     }
 
                 }
@@ -52,6 +52,13 @@ public class FloatValidation {
                 "4.5",
                 "2.2","1.2","0.4");
         validate(boostMdrRequest);
+        String str="1123";
+        int count =0;
+        count++;
+        count++;
+        count++;
+        String value="abcd"+ (Long.parseLong(str)+count);
+        System.out.println(value);
 
 
     }
